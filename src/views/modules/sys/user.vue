@@ -1,11 +1,11 @@
 <template>
   <div class="mod-user">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form :inline="true" :model="dataForm" @keyup.enter.native="searchList()">
       <el-form-item>
         <el-input v-model="dataForm.userName" placeholder="用户名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
+        <el-button @click="searchList()">查询</el-button>
         <el-button v-if="isAuth('sys:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
@@ -104,7 +104,8 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        searchName:''
       }
     },
     components: {
@@ -114,6 +115,12 @@
       this.getDataList()
     },
     methods: {
+      //查询方法
+      searchList(){
+      this.pageIndex=1
+      this.searchName = this.dataForm.userName
+      this. getDataList ()
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
@@ -123,7 +130,7 @@
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'username': this.dataForm.userName
+            'username': this.searchName
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
